@@ -39,11 +39,11 @@ int read_next(FILE *input, char *result)
         int text = fgetc(input);
         if (text >= LIM) {
             continue;
-        } else if (text == EOF) {
-            return EOF;
-        } else {
-            *result = text;
-            return 1;
         }
+        if (text == EOF) {
+            return EOF;
+        }
+        *result = text;
+        return 1;
     }
 }
