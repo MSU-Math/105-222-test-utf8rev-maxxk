@@ -3,18 +3,18 @@
 
 #include <stdio.h>
 
-// функция "считать следующий корректный символ"
-// считывает корректный символ из потока input
-// возвращает EOF, если считать не удалось
-// (кончился поток ввода)
-// возвращает 1 и записывает ответ по указателю result,
-// если считать удалось
-int read_next(FILE *input, char *result);
+// С„СѓРЅРєС†РёСЏ "СЃС‡РёС‚Р°С‚СЊ СЃР»РµРґСѓСЋС‰РёР№ РєРѕСЂСЂРµРєС‚РЅС‹Р№ СЃРёРјРІРѕР»"
+// СЃС‡РёС‚С‹РІР°РµС‚ РєРѕСЂСЂРµРєС‚РЅС‹Р№ СЃРёРјРІРѕР» РёР· РїРѕС‚РѕРєР° input
+// РІРѕР·РІСЂР°С‰Р°РµС‚ EOF, РµСЃР»Рё СЃС‡РёС‚Р°С‚СЊ РЅРµ СѓРґР°Р»РѕСЃСЊ
+// (РєРѕРЅС‡РёР»СЃСЏ РїРѕС‚РѕРє РІРІРѕРґР°)
+// РІРѕР·РІСЂР°С‰Р°РµС‚ 1 Рё Р·Р°РїРёСЃС‹РІР°РµС‚ РѕС‚РІРµС‚ РїРѕ СѓРєР°Р·Р°С‚РµР»СЋ result,
+// РµСЃР»Рё СЃС‡РёС‚Р°С‚СЊ СѓРґР°Р»РѕСЃСЊ
+int read_next(FILE *input, unsigned char *result);
 
 int main(void)
 {
-    char first;
-    char second;
+    unsigned char first;
+    unsigned char second;
 
     while (1) {
         if (read_next(stdin, &first) == EOF) {
@@ -33,7 +33,7 @@ int main(void)
     return 0;
 }
 
-int read_next(FILE *input, char *result)
+int read_next(FILE *input, unsigned char *result)
 {
     while (1) {
         int text = fgetc(input);
@@ -43,7 +43,7 @@ int read_next(FILE *input, char *result)
         if (text == EOF) {
             return EOF;
         }
-        *result = text;
+        *result = (unsigned char)text;
         return 1;
     }
 }
