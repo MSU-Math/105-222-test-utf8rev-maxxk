@@ -1,5 +1,6 @@
 #include <stdio.h>
 #define LIM 128
+#define UTF 4
 
 #include <stdio.h>
 
@@ -13,8 +14,9 @@ int read_next(FILE *input, unsigned char *result);
 
 int main(void)
 {
-    unsigned char first;
-    unsigned char second;
+    
+    unsigned char first[UTF];
+    unsigned char second[UTF];
 
     while (1) {
         if (read_next(stdin, &first) == EOF) {
@@ -22,12 +24,12 @@ int main(void)
         }
 
         if (read_next(stdin, &second) == EOF) {
-            fputc(first, stdout);
+            fputs(first, stdout);
             break;
         }
 
-        fputc(second, stdout);
-        fputc(first, stdout);
+        fputs(second, stdout);
+        fputs(first, stdout);
     }
 
     return 0;
@@ -35,11 +37,41 @@ int main(void)
 
 int read_next(FILE *input, unsigned char *result)
 {
+    for (int i = 0; i < UTF; i++) {
+        *(result+i) = 0;
+    }
     while (1) {
         int text = fgetc(input);
         if (text >= LIM) {
-            continue;
+            // 1100 0000
+            if ( text < 0xC0) {
+                continue;
+            }
+            *result = (unsigned char)text;
+            int skip = 0;
+            int count = 0;
+            if (text >= 0xF0) {
+                count = 4;
+            } else if(text >= 0xE0) {
+                count = 3;
+            } else {
+                count = 2;
+            }
+            for (int i = 1; i < count; i++) {
+                text = fgetc(input);
+                if (text >= LIM && text < 0xC0 ) {
+                    *(result+i) = (unsigned char)text;
+                } else {
+                    ungetc(text, input):
+                    skip++;
+                    break;
+                }
+             }
+            if (skip == 1) {
+                continue;
+            }
         }
+        // 1110 0000 E0 1111 F
         if (text == EOF) {
             return EOF;
         }
