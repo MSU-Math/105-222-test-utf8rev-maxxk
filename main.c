@@ -16,6 +16,14 @@
 int read_next(FILE *input, unsigned char result[UTF]);
 int read_continuation(FILE *input, unsigned char *result);
 
+struct dynamic_array {
+    int size;
+    int capacity;
+    unsigned int *values;
+};
+
+void insert(struct dynamic_array *values, int value);
+
 int main(void)
 {
 
