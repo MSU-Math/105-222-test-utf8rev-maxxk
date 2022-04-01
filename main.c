@@ -73,12 +73,11 @@ int read_next(FILE *input, unsigned char result[UTF])
             if (skip == 1) {
                 continue;
             }
-        }
-        // 1110 0000 E0 1111 F
-        if (text == EOF) {
+        } else if (text == EOF) {
             return EOF;
+        } else {
+            *result = (unsigned char)text;
         }
-        *result = (unsigned char)text;
         return 1;
     }
 }
