@@ -1,9 +1,12 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #define LIM 128
 #define UTF 4
 #define FIRST_TWOBYTE 0xC0
 #define FIRST_THREEBYTE 0xE0
 #define FIRST_FORUBYTE 0xF0
+#define INITIAL_SIZE 4
 
 #include <stdio.h>
 
@@ -19,10 +22,10 @@ int read_continuation(FILE *input, unsigned char *result);
 struct dynamic_array {
     int size;
     int capacity;
-    unsigned int *values;
+    int *values;
 };
 
-void insert(struct dynamic_array *values, int value);
+void insert(struct dynamic_array *array, int value);
 
 int main(void)
 {
@@ -93,4 +96,22 @@ int read_next(FILE *input, unsigned char result[UTF])
         }
         return 1;
     }
+}
+void insert(struct dynamic_array *array, int value)
+{
+    if (array->capacity == 0) {
+        array->values = (int *)malloc((INITIAL_SIZE) * sizeof(int));
+        array->capacity = INITIAL_SIZE;
+    }
+    if ((array->size + 1) >= array->capacity) {
+        int *expanded;
+        expanded = (int *)malloc((array->capacity) * (sizeof(int) * 3) / 2);
+        memcpy(expanded, array->values, array->size * sizeof(int));
+        free(array->values);
+        array->values = expanded;
+        array->capacity =
+            (int)((array->capacity) * (sizeof(int) * 3) / 2 / sizeof(int));
+    }
+    array->values[array->size] = value;
+    array->size = array->size + 1;
 }
