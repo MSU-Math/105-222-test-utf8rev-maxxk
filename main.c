@@ -14,6 +14,7 @@
 // возвращает 1 и записывает ответ по указателю result,
 // если считать удалось
 int read_next(FILE *input, unsigned char result[UTF]);
+int read_continuation(FILE *input, unsigned char *result);
 
 int main(void)
 {
@@ -38,6 +39,18 @@ int main(void)
     return 0;
 }
 
+int read_continuation(FILE *input, unsigned char *result)
+{
+    int text = fgetc(input);
+    if (text >= LIM && text < FIRST_TWOBYTE) {
+        *result = (unsigned char)text;
+        return 1;
+    }
+
+    ungetc(text, input);
+    return 0;
+}
+
 int read_next(FILE *input, unsigned char result[UTF])
 {
     while (1) {
@@ -46,33 +59,25 @@ int read_next(FILE *input, unsigned char result[UTF])
         }
         int text = fgetc(input);
         if (text >= LIM) {
-            // 1100 0000
             if (text < FIRST_TWOBYTE) {
                 continue;
             }
             *result = (unsigned char)text;
-            int skip = 0;
-            int count = 0;
-            if (text >= FIRST_FORUBYTE) {
-                count = 4;
-            } else if (text >= FIRST_THREEBYTE) {
-                count = 3;
-            } else {
-                count = 2;
-            }
-            for (int i = 1; i < count; i++) {
-                text = fgetc(input);
-                if (text >= LIM && text < FIRST_TWOBYTE) {
-                    *(result + i) = (unsigned char)text;
-                } else {
-                    ungetc(text, input);
-                    skip++;
-                    break;
-                }
-            }
-            if (skip == 1) {
+
+            if (!read_continuation(input, result + 1)) {
                 continue;
             }
+
+            if (text >= FIRST_THREEBYTE &&
+                !read_continuation(input, result + 2)) {
+                continue;
+            }
+
+            if (text >= FIRST_FORUBYTE &&
+                !read_continuation(input, result + 3)) {
+                continue;
+            }
+            return 1;
         } else if (text == EOF) {
             return EOF;
         } else {
