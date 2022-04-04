@@ -27,11 +27,27 @@ struct dynamic_array {
 
 void insert(struct dynamic_array *array, int value);
 
+// - Открыть файл Unicode-Data.txt
+// - в каждой строке:
+//     - считать шестнадцатиричное число до точки с запятой (код символа, 4 байта) 
+//     - пропустить следующее поле (до следующей точки с запятой)
+//     - считать текст до следующей точки с запятой (класс символа — нас интересуют первые два байта)
+//     - если класс относится к L, N, P, S, Zs — сохраняем символ в список "начинающих кластер"
+//     - если класс относится к M — сохраняем символ в список "продолжающих кластер"
+int read_unicode_data(struct dynamic_array *cluster_begin, struct dynamic_array *cluster_end);
+
 int main(void)
 {
-
     unsigned char first[UTF];
     unsigned char second[UTF];
+
+    struct dynamic_array cluster_begin = {0};
+    struct dynamic_array cluster_end = {0};
+
+    if (read_unicode_data(&cluster_begin, &cluster_end)) {
+        printf("Invalid Unicode Data\n");
+        return 1;
+    }
 
     while (1) {
         if (read_next(stdin, first) == EOF) {
