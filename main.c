@@ -48,7 +48,7 @@ int main(void)
         printf("Invalid Unicode Data\n");
         return 1;
     }
-
+    printf("%d %d\n",cluster_begin.size,cluster_end.size);
     while (1) {
         if (read_next(stdin, first) == EOF) {
             break;
@@ -130,4 +130,29 @@ void insert(struct dynamic_array *array, int value)
     }
     array->values[array->size] = value;
     array->size = array->size + 1;
+}
+int read_unicode_data(struct dynamic_array *cluster_begin, struct dynamic_array *cluster_end){
+    FILE *f;
+    int code;
+	char c1;
+	char c2;
+    f=fopen("Unicode-Data.txt","r");
+    while(!feof(f)){
+        fscanf(f,"%x",&code);
+		fgetc(f);
+		while(fgetc(f)!=';'){
+		}
+		fscanf(f,"%c%c",&c1,&c2);
+		if((c1=='L')||(c1=='N')||(c1=='P')||(c1=='S')||((c1=='Z')&&(c2=='s'))){
+		    insert(cluster_begin,code);
+		}
+		if(c1=='M'){
+			insert(cluster_end,code);
+		}
+		while((fgetc(f)!='\n')||(!feof(f))){
+             
+		}
+	} 
+	fclose(f);
+    return 0;
 }
