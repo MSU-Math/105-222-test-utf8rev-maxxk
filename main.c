@@ -149,7 +149,7 @@ int read_unicode_data(struct dynamic_array *cluster_begin, struct dynamic_array 
 		if(c1=='M'){
 			insert(cluster_end,code);
 		}
-		while((fgetc(f)!='\n')||(!feof(f))){
+		while((fgetc(f)!='\n')&&(!feof(f))){
              
 		}
 	} 
